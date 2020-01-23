@@ -4,7 +4,7 @@ var highScore = document.querySelector(".highscore");
 var remove = document.querySelector(".removal");
 
 var q1 = {
-    question: "Commonly used data types DO NOT Include:",
+    question: "1) Commonly used data types DO NOT Include:",
     button1: "Strings",
     button2: "Booleans",
     button3: "Alerts",
@@ -13,7 +13,7 @@ var q1 = {
 };
 
 var q2 = {
-    question: "The condition in an if/else statement is enclosed within ______.",
+    question: "2) The condition in an if/else statement is enclosed within ______.",
     button1: "Quotes",
     button2: "Curly Brackets",
     button3: "Parentheses",
@@ -22,7 +22,7 @@ var q2 = {
 };
 
 var q3 = {
-    question: "Arrays in Javascript can be used to store ______.",
+    question: "3) Arrays in Javascript can be used to store ______.",
     button1: "Numbers and Strings",
     button2: "Booleans",
     button3: "Other Arrays",
@@ -31,7 +31,7 @@ var q3 = {
 };
 
 var q4 = {
-    question: "String values must be enclosed within ______ when being assigned to variables.",
+    question: "4) String values must be enclosed within ______ when being assigned to variables.",
     button1: "Quotes",
     button2: "Curly Brackets",
     button3: "Commas",
@@ -40,7 +40,7 @@ var q4 = {
 };
 
 var q5 = {
-    question: "A very useful tool during development and debugging for printing content to the debugger is:",
+    question: "5) A very useful tool during development and debugging for printing content to the debugger is:",
     button1: "Javascript",
     button2: "Console.log",
     button3: "For Loops",
@@ -49,7 +49,7 @@ var q5 = {
 };
 
 var q6 = {
-    question: "The correct way to select a div element with an ID of Basic using JQuery is:",
+    question: "6) The correct way to select a div element with an ID of Basic using JQuery is:",
     button1: "$(\"div\")",
     button2: "$(.Basic)",
     button3: "$(#Basic)",
@@ -58,7 +58,7 @@ var q6 = {
 };
 
 var q7 = {
-    question: "What is the notation to create a span element in the DOM?",
+    question: "7) What is the notation to create a span element in the DOM?",
     button1: "$(\"<span>\")",
     button2: "$(span)",
     button3: "$(\"span\")",
@@ -67,7 +67,7 @@ var q7 = {
 };
 
 var q8 = {
-    question: "Which of the following is the correct way to declare a for loop?",
+    question: "8) Which of the following is the correct way to declare a for loop?",
     button1: "for (index = 0; index < 10; index++)",
     button2: "for (index = 0, index < 10, index++)",
     button3: "for (index < 10; index = 0; index++)",
@@ -76,7 +76,7 @@ var q8 = {
 };
 
 var q9 = {
-    question: "How would you set the variable, start, equal to the ID, starter, from a html file?",
+    question: "9) How would you set the variable, start, equal to the ID, starter, from a html file?",
     button1: "var start = document.getElementById(\"starter\")",
     button2: "var start = document.querySelector(\"#starter\")",
     button3: "Both 1) and 2)",
@@ -85,7 +85,7 @@ var q9 = {
 };
 
 var q10 = {
-    question: "What method do you need to call to store and object in Local Storage?",
+    question: "10) What method do you need to call to store and object in Local Storage?",
     button1: ".parse()",
     button2: ".stringify()",
     button3: ".condense()",
@@ -240,7 +240,8 @@ function setTime() {
 
                 if(seconds == 0) {
                   clearInterval(dispInterval);
-                  disp.parentNode.removeChild(disp);
+                  if (contain.lastChild.className == "removal")
+                    contain.removeChild(contain.lastChild);
                 }
             }, 1000);
         }
@@ -258,7 +259,8 @@ function setTime() {
                 seconds--;
                 if(seconds == 0) {
                     clearInterval(dispInterval);
-                    disp.parentNode.removeChild(disp);
+                    if (contain.lastChild.className == "removal")
+                        contain.removeChild(contain.lastChild);
                 }
             }, 1000);
         }
@@ -323,8 +325,14 @@ function setTime() {
         }
 
         if (highScores.length != 0){
-            // while (userScore > highScore[index].score)
-                
+            for (index = 0; index < highScores.length; index++){
+                if (userScore >= highScores[index].score){
+                    highScores.splice(index, 0, user)   
+                    index = highScores.length;
+                }
+                if ((index == (highScores.length-1)) && (userScore <= highScores[index].score))
+                    highScores.push(user);
+            }
             
         }
         else{
@@ -337,17 +345,17 @@ function setTime() {
     
   }
 
-  function displayHighScores(){
+function displayHighScores(){
     while (contain.firstChild) {
         contain.removeChild(contain.firstChild);
     }
+
     var head = document.createElement("h2");
     var disp = document.createElement("div");
     var btnBack = document.createElement("button");
     var btnClear = document.createElement("button");
     btnBack.textContent = "Go Back";
     btnClear.textContent = "Clear HighScores";
-
     btnBack.setAttribute("class", "button");
     btnClear.setAttribute("class", "button");
     head.textContent = "High Scores";
@@ -363,6 +371,7 @@ function setTime() {
     contain.appendChild (btnBack);
     contain.appendChild (btnClear);
 
+    //Adds two buttons to the Highscores page, 1) clears the scores, and 2) brings user back to main page
     btnClear.addEventListener ("click", clearHighScores);
     btnBack.addEventListener ("click", function(){
         userScore = 0;
@@ -370,20 +379,20 @@ function setTime() {
         start = false;
         index = 0;
         displayMainPage();
-
     });
-    
-  }
+}
 
-  function clearHighScores(){
-      highScores = [];
-      displayHighScores();
-    
-  }
+//Clears the highscores array and updates the display page
+function clearHighScores(){
+    highScores = [];
+    displayHighScores();
+}
 
-  displayMainPage();
-  
-  highScore.addEventListener("click", function (){
+//Run the Quiz from the Main Page
+displayMainPage();
+
+/*Opens the Highscores Display Page from the NavBar, while also setting all the variables back to their starting points, in case the quiz was currently running when the page is opened.*/
+highScore.addEventListener("click", function (){
     timeEl.textContent = " ";
     userScore = 0;
     secondsLeft = 60;
