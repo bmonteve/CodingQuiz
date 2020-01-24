@@ -1,8 +1,10 @@
+//calls the DOM elements to be manipulated during the code quiz
 var timeEl = document.querySelector(".time");
 var contain = document.querySelector(".container");
 var highScore = document.querySelector(".highscore");
 var remove = document.querySelector(".removal");
 
+//initializes all the questions for the code
 var q1 = {
     question: "1) Commonly used data types DO NOT Include:",
     button1: "Strings",
@@ -93,6 +95,8 @@ var q10 = {
     answer: "button2"
 };
 
+//initializes the variable necessary to run the quiz and keep track of user info
+//needs to be updated to use local storage instead of an array 
 var index = 0;
 var questions = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10];
 var secondsLeft = 60;
@@ -104,7 +108,7 @@ var correct;
 var start = false;
 var highScores = [];
 
-
+//sets the time interval for the quiz once it is started
 function setTime() {
     timerInterval = setInterval(function() {
       secondsLeft--;
@@ -117,17 +121,15 @@ function setTime() {
       }
 
       if (secondsLeft <= 0){
-          clearInterval(timerInterval);
-          timeEl.textContent = " ";
-        //   while (contain.firstChild) {
-            // contain.removeChild(contain.firstChild);
-        // }
+        clearInterval(timerInterval);
+        timeEl.textContent = " ";
         storeHighScore();
       }
   
     }, 1000);
   }
 
+  //runs the mainpage to explain the quiz and penalties for wrong answers
   function displayMainPage(){
     while (contain.firstChild) {
         contain.removeChild(contain.firstChild);
@@ -136,7 +138,7 @@ function setTime() {
     var text = document.createElement("p");
     var but = document.createElement("button");
     head.textContent = "Coding Quiz Challenge";
-    text.textContent = "Try to answer the following code related questions within the time limit. Keep in mind that  incorrect answers will penalize your time by 10 seconds.";
+    text.textContent = "Try to answer the following code related questions within the time limit. Keep in mind that incorrect answers will penalize your time by 10 seconds.";
     but.className = "button submit";
     but.textContent = "Start Quiz";
     
@@ -153,77 +155,82 @@ function setTime() {
 
   }
 
-  function displayQuestionsPage(){
+//Displays the questions page by removing all the elements of the main container
+//Only runs after the start quiz button is pushed
+function displayQuestionsPage(){
     while (contain.firstChild) {
         contain.removeChild(contain.firstChild);
     }
     
-
     if (index != 10){
+        var head = document.createElement("h2");
+        var text = document.createElement("p");
+        var div = document.createElement("div");
+        var but1 = document.createElement("button");
+        var but2 = document.createElement("button");
+        var but3 = document.createElement("button");
+        var but4 = document.createElement("button");
+        var disp = document.createElement("div");
+        var answer = questions[index].answer;
+        head.textContent = questions[index].question;
+        but1.textContent = "1) " + questions[index].button1;
+        but2.textContent = "2) " + questions[index].button2;
+        but3.textContent = "3) " + questions[index].button3;
+        but4.textContent = "4) " + questions[index].button4;
+        contain.setAttribute("style", "text-align: left");
+        but1.className = "button";
+        but2.className = "button";
+        but3.className = "button";
+        but4.className = "button";
+        div.className = "btn-group-vertical";
     
-    var head = document.createElement("h2");
-    var text = document.createElement("p");
-    var div = document.createElement("div");
-    var but1 = document.createElement("button");
-    var but2 = document.createElement("button");
-    var but3 = document.createElement("button");
-    var but4 = document.createElement("button");
-    var disp = document.createElement("div");
-    var answer = questions[index].answer;
-    head.textContent = questions[index].question;
-    but1.textContent = "1) " + questions[index].button1;
-    but2.textContent = "2) " + questions[index].button2;
-    but3.textContent = "3) " + questions[index].button3;
-    but4.textContent = "4) " + questions[index].button4;
-    contain.setAttribute("style", "text-align: left");
-    but1.className = "button";
-    but2.className = "button";
-    but3.className = "button";
-    but4.className = "button";
-    div.className = "btn-group-vertical";
-    
-    div.appendChild(but1);
-    div.appendChild(but2);
-    div.appendChild(but3);
-    div.appendChild(but4);
+        div.appendChild(but1);
+        div.appendChild(but2);
+        div.appendChild(but3);
+        div.appendChild(but4);
+        contain.appendChild(head);
+        contain.appendChild(div);
 
-    contain.appendChild(head);
-    contain.appendChild(div);
+        //adds all the buttons for the answer choices for the specific question
+        //run the display Right or Wrong function to have appended to the next question based on the answer to question before it.
+        //reruns the displays question page to move on to the next question
+        but1.addEventListener("click", function(){
+            userAnswer = "button1";
+            index++;
+            displayRightOrWrong();
+            displayQuestionsPage();
+        });
 
-    but1.addEventListener("click", function(){
-        userAnswer = "button1";
-        index++;
-        displayRightOrWrong();
-        displayQuestionsPage();
-    });
+        but2.addEventListener("click", function(){
+            userAnswer = "button2";
+            index++;
+            displayRightOrWrong();
+            displayQuestionsPage();
+        });
 
-    but2.addEventListener("click", function(){
-        userAnswer = "button2";
-        index++;
-        displayRightOrWrong();
-        displayQuestionsPage();
-    });
+        but3.addEventListener("click", function(){
+           userAnswer = "button3";
+           index++;
+           displayRightOrWrong();
+           displayQuestionsPage();
+        });
 
-    but3.addEventListener("click", function(){
-        userAnswer = "button3";
-        index++;
-        displayRightOrWrong();
-        displayQuestionsPage();
-    });
-
-    but4.addEventListener("click", function(){
-        userAnswer = "button4";
-        index++;
-        displayRightOrWrong();
-        displayQuestionsPage();
-    });
+        but4.addEventListener("click", function(){
+            userAnswer = "button4";
+            index++;
+           displayRightOrWrong();
+           displayQuestionsPage();
+        });
     }
-
+    
+    //handles when the code when the last question has been answered and runs the storage of the last high score
     if (index == 10){
         clearInterval(timerInterval);
         storeHighScore();
     }
 
+    //Appends the correct or wrong display after the 1st question is answered
+    //It also is set to a new 1 second time interval to disappear after the next question has loaded
     if (start == true){
         if (correct == true){
             var seconds = 1;
@@ -265,11 +272,11 @@ function setTime() {
             }, 1000);
         }
     }
+}
 
-    
-  }
-
-  function displayRightOrWrong (){
+//Compares the users choice to the answer of the question and updates the score or time
+//The start variable tells the script that the first question has been answered
+function displayRightOrWrong (){
     if (userAnswer == questions[index-1].answer){
         userScore += 3;
         correct = true;
@@ -280,9 +287,10 @@ function setTime() {
         secondsLeft -= 10;
         start = true;
     }
-  }
+}
 
-  function storeHighScore(){
+//Clears the main container and opens the submit page after the quiz is taken
+function storeHighScore(){
     while (contain.firstChild) {
         contain.removeChild(contain.firstChild);
     }
@@ -308,7 +316,7 @@ function setTime() {
     contain.prepend(text);
     contain.prepend(head);
     
-    
+    //clears the correct or wrong display after a question is answered
     dispInterval = setInterval(function() {
         seconds--;
         if(seconds == 0) {
@@ -318,12 +326,14 @@ function setTime() {
          }
      }, 1000);
     
-     btn.addEventListener("click", function(){
+    //Submits a user object with the values of initials and scores into the highscores array
+    btn.addEventListener("click", function(){
         var user = {
             initials: input.value,
             score: userScore
         }
 
+        //Adds the user to its correct spot in the array based on the users score
         if (highScores.length != 0){
             for (index = 0; index < highScores.length; index++){
                 if (userScore >= highScores[index].score){
@@ -333,18 +343,17 @@ function setTime() {
                 if ((index == (highScores.length-1)) && (userScore <= highScores[index].score))
                     highScores.push(user);
             }
-            
         }
         else{
             highScores.push(user);
         }
 
+        //displays the highscores after the last user submits their info
         displayHighScores();
-     });
-    
-    
-  }
+    });
+}
 
+//empties the main container of every element and displays the highscores page
 function displayHighScores(){
     while (contain.firstChild) {
         contain.removeChild(contain.firstChild);
@@ -360,12 +369,15 @@ function displayHighScores(){
     btnClear.setAttribute("class", "button");
     head.textContent = "High Scores";
 
+    //Updates the display element with every stored Userscore and Initial in the highscores array
     for (index = 0; index < highScores.length; index++){
         var user = document.createElement("p");
         user.textContent = (index+1) + ") " + highScores[index].initials + " - " + highScores[index].score;
         user.setAttribute ("style", "background-color: plum; margin-bottom: 12px");
         disp.appendChild(user);
     }
+
+    //appends the elements to the highscores page 
     contain.appendChild (head);
     contain.appendChild (disp);
     contain.appendChild (btnBack);
